@@ -19,35 +19,4 @@
     .parameter { font-size: 24px; font-weight: bold; color: #1b5e20; text-align: center; margin: 25px 0 15px; text-transform: uppercase; letter-spacing: 1px; }
     .score-group { margin: 25px 0; padding: 20px; background: #f8fff8; border-radius: 12px; border: 2px solid #81c784; position: relative; }
     .score-group h3 { margin: 0 0 15px 0; color: #2e7d32; font-size: 22px; background: #e8f5e9; padding: 10px; border-radius: 8px; }
-    .clear-btn { position: absolute; top: 12px; right: 12px; background: #d32f2f; color: white; border: none; padding: 8px 14px; border-radius: 6px; font-size: 13px; cursor: pointer; }
-    .clear-btn:hover { background: #b71c1c; }
-    .nominee { display: flex; align-items: center; padding: 14px; margin: 10px 0; background: white; border-radius: 10px; border: 2px solid transparent; transition: all 0.3s; cursor: pointer; }
-    .nominee:hover { border-color: #4caf50; transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-    .nominee img { width: 70px; height: 70px; border-radius: 50%; margin-right: 18px; object-fit: cover; border: 4px solid #81c784; }
-    .nominee input[type="radio"] { margin-right: 15px; transform: scale(1.5); }
-    .nominee span { font-size: 17px; font-weight: 500; }
-    .dept { font-size: 14px; color: #2e7d32; font-weight: bold; }
-    button.main-btn { background: #2e7d32; color: white; padding: 16px 32px; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; margin: 15px 8px; }
-    button.main-btn:hover { background: #1b5e20; }
-    .reset-btn { background: #6c757d; }
-    .reset-btn:hover { background: #5a6268; }
-    .winner-box { background: linear-gradient(45deg, gold, #ffeb3b); padding: 35px; border-radius: 20px; text-align: center; margin: 30px 0; animation: glow 2s infinite alternate; }
-    @keyframes glow { from { box-shadow: 0 0 20px gold; } to { box-shadow: 0 0 50px #ffeb3b; } }
-    .winner-box img { width: 140px; height: 140px; border-radius: 50%; border: 10px solid white; margin-bottom: 15px; }
-    .winner-box h2 { font-size: 38px; color: #1b5e20; margin: 10px 0; }
-    .summary-table { width: 100%; border-collapse: collapse; margin: 30px 0; font-size: 16px; }
-    .summary-table th, .summary-table td { border: 1px solid #81c784; padding: 14px; text-align: center; }
-    .summary-table th { background: #4caf50; color: white; font-weight: bold; }
-  </style>
-</head>
-<body>
-  <div class="container" id="container"></div>
-  <script>
-    const parameters = ["Punctuality","Attitude Towards Work","Attitude Towards Coworkers","Discipline","Innovative","Dressing","Willingness to Accept Additional Task"];
-    const scores = [{label:"GOOD",value:1,display:"GOOD (1 Mark)"},{label:"BETTER",value:2,display:"BETTER (2 Marks)"},{label:"BEST",value:3,display:"BEST (3 Marks)"},{label:"EXCELLENT",value:4,display:"EXCELLENT (4 Marks)"},{label:"EXCEPTIONAL",value:5,display:"EXCEPTIONAL (5 Marks)"}];
-    const nominees = [{name:"Josephine Pomaa",dept:"MATERNITY",photo:"https://via.placeholder.com/140/1976d2/ffffff?text=JP"},{name:"Hellen Esinam Kawor",dept:"ACCOUNTS",photo:"https://i.imgur.com/0oW8ksy.jpg"},{name:"Dr. Dennis Asaah K",dept:"CLINICIANS",photo:"https://i.imgur.com/0w7kR8f.jpg"},{name:"Francisca Ansu Najah",dept:"PHARMACY",photo:"https://via.placeholder.com/140/ff5722/ffffff?text=FAN"},{name:"Desmond Amoako Atta",dept:"LAB",photo:"https://via.placeholder.com/140/009688/ffffff?text=DAA"}];
-    let step = 0;
-    let voterDetails = {staffId:"",surname:"",middleName:"",otherName:""};
-    let votes = {};
-    function updateProgress(){const percent=step===0?0:(step/parameters.length)*100;const bar=document.querySelector('.progress-bar');if(bar)bar.style.width=percent+'%';}
-    function render(){const container=document.getElementById("container");container.innerHTML=`<div class="header"><img src="https://i.imgur.com/jM246HZ.jpg" alt="GHS Logo" onerror="this.src='https://via.placeholder.com/90?text=GHS'"><h1>KWATIRE GOVERNMENT HOSPITAL STAFF ELECTIONS 2025 (MAY)</h1></div><div class="progress"><div class="progress-bar"></div></div>`;if(step===0){container.innerHTML+=`<h2>Voter Identification</h2><div class="form-group"><label>Staff ID <span style="color:red">*</span></label><input type="text" id="staffId" value="${voterDetails.staffId}" placeholder="e.g. GHS12345"></div><div class="form-group"><label>Surname <span style="color:red">*</span></label><input type="text" id="surname" value="${voterDetails.surname}"></div><div class="form-group"><label>Middle Name (Optional)</label><input type="text" id="middleName" value="${voterDetails.middleName}"></div><div class="form-group"><label>Other Name <span style="color:red">*</span></label><input type="text" id="otherName" value="${voterDetails.otherName}"></div><div style="text-align:center;margin-top:30px"><button class="main-btn" onclick="nextStep()">Start Voting</button></div>`;}else if(step>0&&step<=parameters.length){const param=parameters[step-1];const current=votes[param]||{};container.innerHTML+=`<div class="parameter">Parameter ${step} of ${parameters.length}: ${param.toUpperCase()}</div><p style="text-align:center;color:#d32f2f;font-weight:bold;margin:20px 0">Assign each mark (1–5) to only ONE nominee</p>${scores.map(score=>`<div class="score-group"><h3>$$ {score.display}</h3><button class="clear-btn" onclick="clearScore(' $${param}', $$ {score.value})">Clear</button> $${nominees.map(nom=>{const checked=current[nom.name]===score.value;const disabled=Object.values(current).includes(score.value)&&!checked;return`<label class="nominee"><input type="radio" name="s${score.value}" ${checked?'checked':''} $$ {disabled?'disabled':''} onchange="recordVote(' $${param}', '${nom.name}', $$ {score.value})"><img src=" $${nom.photo}" alt="${nom.name}" onerror="this.src='https://via.placeholder.com/70?
+    .clear-btn { position: absolute; top: 12px; right: 12px; background: #d32f2f
